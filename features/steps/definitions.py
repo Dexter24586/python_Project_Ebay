@@ -1,26 +1,28 @@
+from selenium.webdriver.support import expected_conditions as EC
 from behave import step
 from selenium import webdriver
 from selenium.common import NoSuchElementException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 from time import sleep
 
 
-@step("Navigate to ebay.com")
-def step_impl(context):
+@step('Navigate to "{url}"')
+def step_impl(context, url):
     context.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-    context.driver.get("https://www.ebay.com/")
+    context.driver.get(f"https://www.{url}")
 
 
-@step('In search bar type "dress"')
-def step_impl(context):
+@step('In search bar type "{input_var}"')
+def step_impl(context, input_var):
     searchbar = context.driver.find_element(By.XPATH, "//input[@type='text']")
-    searchbar.send_keys("dress")
+    searchbar.send_keys(f"{input_var}")
 
 
-@step('Click "Search" button')
+@step('Click the "Search" button')
 def step_impl(context):
     s_button = context.driver.find_element(By.XPATH, "//input[@type='submit']")
     s_button.click()
@@ -34,7 +36,7 @@ def step_impl(context):
     sleep(3)
 
 
-@step('Click "Sign In" button')
+@step('Click the "Sign In" button')
 def step_impl(context):
     sign_in_button = context.driver.find_element(By.XPATH, "//span[@id = 'gh-ug']/a[text() = 'Sign in']")
     sign_in_button.click()
@@ -51,7 +53,7 @@ def step_impl(context):
     else: print("Page is not loaded")
 
 
-@step('Click "register" button')
+@step('Click the "register" button')
 def step_impl(context):
     register_button = context.driver.find_element(By.XPATH, "//span[@id='gh-ug-flex']/a[text() = 'register']")
     register_button.click()
@@ -68,16 +70,16 @@ def step_impl(context):
     else: print("Page is not loaded")
 
 
-@step('Click "Daily Deals" button')
-def step_impl(context):
-    daily_deals_button = context.driver.find_element(By.XPATH, "//a[@class='gh-p' and text()=' Daily Deals']")
+@step('Click "{var1}" button')
+def step_impl(context, var1):
+    daily_deals_button = context.driver.find_element(By.XPATH, f"//*[contains(@class, 'gh-') and normalize-space(text()) = '{var1}']")
     daily_deals_button.click()
     sleep(1)
 
 
-@step('Verify that "Daily Deals" page is loaded')
-def step_impl(context):
-    title_name = context.driver.title
+@step('Verify that "{page_title}" page is loaded with title')
+def step_impl(context, page_title):
+    title_name = context.driver.find_element(By.XPATH, f"//title[contains(text(), '{page_title}')]")
     expected_title = "Daily Deals on eBay | Best deals and Free Shipping"
     if title_name == expected_title:
         print("Page is loaded")
@@ -85,75 +87,7 @@ def step_impl(context):
         print("Page is not loaded")
 
 
-@step('Click "Brand Outlet" button')
-def step_impl(context):
-    brand_outlet_button = context.driver.find_element(By.XPATH, "//a[@class='gh-p' and text()=' Brand Outlet']")
-    brand_outlet_button.click()
-    sleep(1)
-
-
-@step('Verify that "Brand Outlet" page is loaded')
-def step_impl(context):
-    title_name = context.driver.title
-    expected_title = "Brand Outlet products for sale | eBay"
-    if title_name == expected_title:
-        print("Page is loaded")
-    else:
-        print("Page is not loaded")
-
-
-@step('Click "Gift Cards" button')
-def step_impl(context):
-    gift_cards_button = context.driver.find_element(By.XPATH, "//a[@class='gh-p' and text()=' Gift Cards']")
-    gift_cards_button.click()
-    sleep(1)
-
-
-@step('Verify that "Gift Cards" page is loaded')
-def step_impl(context):
-    title_name = context.driver.title
-    expected_title = "eBay Gift Cards | eBay.com"
-    if title_name == expected_title:
-        print("Page is loaded")
-    else:
-        print("Page is not loaded")
-
-
-@step('Click "Help & Contact" button')
-def step_impl(context):
-    help_contact_button = context.driver.find_element(By.XPATH, "//a[@class='gh-p' and text()=' Help & Contact']")
-    help_contact_button.click()
-    sleep(1)
-
-
-@step('Verify that "Help & Contact" page is loaded')
-def step_impl(context):
-    title_name = context.driver.title
-    expected_title = "eBay Customer Service"
-    if title_name == expected_title:
-        print("Page is loaded")
-    else:
-        print("Page is not loaded")
-
-
-@step('Click "Sell" button')
-def step_impl(context):
-    sell_button = context.driver.find_element(By.XPATH, "//a[@class='gh-p' and text()=' Sell']")
-    sell_button.click()
-    sleep(1)
-
-
-@step('Verify that "Sell" page is loaded')
-def step_impl(context):
-    title_name = context.driver.title
-    expected_title = "Selling on eBay | Electronics, Fashion, Home & Garden | eBay"
-    if title_name == expected_title:
-        print("Page is loaded")
-    else:
-        print("Page is not loaded")
-
-
-@step('Click "Watchlist" button')
+@step('Click the "Watchlist" button')
 def step_impl(context):
     watchlist_button = context.driver.find_element(By.XPATH, "//a[@class= 'gh-eb-li-a gh-rvi-menu watchlist-menu'][text() = 'Watchlist']")
     watchlist_button.click()
@@ -172,7 +106,7 @@ def step_impl(context):
     assert sign_in_watchlist_button is not None, "Sign In button should be present on the page."
 
 
-@step('Click "My eBay" button')
+@step('Click the "My eBay" button')
 def step_impl(context):
     my_ebay_button = context.driver.find_element(By.XPATH, "//a[@class= 'gh-eb-li-a gh-rvi-menu' and text() = 'My eBay']")
     my_ebay_button.click()
@@ -229,7 +163,7 @@ def step_impl(context):
         print(error)
 
 
-@step('Click "Cart" button')
+@step('Click the "Cart" button')
 def step_impl(context):
     cart_button = context.driver.find_element(By.XPATH, "//a[@aria-label='Your shopping cart']")
     cart_button.click()
@@ -279,4 +213,114 @@ def step_impl(context):
     add_to_cart_button = context.driver.find_element(By.XPATH, "//span[@class='ux-call-to-action__text'][text()='Add to cart']")
     add_to_cart_button.click()
     sleep(1)
+
+@step('Style filter "{filter_name}" by "{value}"')
+def filter_by_value(context, filter_name, value):
+    expand_button = context.driver.find_element(By.XPATH, f"//div[text()='{filter_name}']")
+    if filter_name.lower() == "Style" or "Pattern" or "Season" or "Theme":
+       expand_button.click()
+       filter_option = context.driver.find_element(By.XPATH, f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value}']]//input")
+       filter_option.click()
+       sleep(3)
+
+    else:
+         filter_option = context.driver.find_element(By.XPATH, f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value}']]//input" )
+         filter_option.click()
+         sleep(3)
+
+
+
+
+@step('Size filter "{size_name}" for "{size_type}" and "{value}"')
+def filter_by_size(context, size_name:str, size_type, value):
+    if size_name.lower() == "Regular".lower():
+        filter_option = context.driver.find_element(By.XPATH, f"'//li[@class='x-refine__main__list '][.//div[text()='Size']]//div[@class='size-component__container']//span[text()='{size_type}']/following-sibling::span[text()='{value}]")
+        filter_option.click()
+        sleep(3)
+    else:
+        button = context.driver.find_element(By.XPATH, f"//h4[contains(text(),'{size_name}')]")
+        button.click()
+        sleep(3)
+        filter_option = context.driver.find_element(By.XPATH, f"//li[@class='x-refine__main__list '][.//div[text()='Size']]//div[@class='size-component__container']//span[text()='{size_type}']/following-sibling::span[text()='{value}']" )
+        filter_option.click()
+        sleep(3)
+
+@step('Choose "{color_value}" color')
+def filter_color(context, color_value):
+    color_button = context.driver.find_element(By.XPATH, f"//span[text()='{color_value}']")
+    color_button.click()
+    sleep(3)
+@step('in "{option1}" click "{option2}"')
+def step_impl(context, option1, option2):
+    radio_button = context.driver.find_element(By.XPATH, f"//li[@class='x-refine__main__list '][.//div[text()='{option1}']]//span[text()='{option2}']/../..//input[@type='radio']")
+    radio_button.click()
+    sleep(5)
+
+
+@step('all items are "{desired_title}" related')
+def check_all_items_titles(context, desired_title):
+    all_items = context.driver.find_elements(By.XPATH, "//li[contains(@id, 'item')]//span[@role='heading']")
+    issues = []
+
+    for item in all_items:
+        title = item.text
+        if desired_title.lower() not in title.lower():
+            issues.append(f'{title} is not {desired_title} related')
+
+    if issues:
+        raise Exception(f'Following issues discovered: {issues}')
+
+
+@step('all items are "{our_search2}" related on "{page_quantity1}" amount of pages')
+def step_impl(context, our_search2, page_quantity1):
+    page_quantity = int(page_quantity1)
+    issues = []
+    for page_number in range(1, page_quantity+1):
+        all_items = context.driver.find_elements(By.XPATH, "//li[contains(@id, 'item')]//span[@role='heading']")
+
+        for item in all_items:
+            title = item.text
+            if our_search2.lower() not in title.lower():
+               issues.append(f'{title} is not {our_search2} related')
+
+        page_button = context.driver.find_element(By.XPATH, f"//a[text()='{page_number + 1}']")
+        page_button.click()
+
+    if issues:
+        raise Exception(f'Following issues discovered: {issues}')
+
+
+@step('our items "{product_name}" are related on pages from "{start_page_number}" to "{finish_page_number}"')
+def step_impl(context, product_name, start_page_number, finish_page_number):
+    issues = []
+
+    start_page_number, finish_page_number = int(start_page_number), int(finish_page_number)
+
+    def check_items():
+        all_items = WebDriverWait(context.driver, 10).until(
+            EC.presence_of_all_elements_located((By.XPATH, "//li[contains(@id, 'item')]//span[@role='heading']"))
+        )
+
+        for item in all_items:
+            title = item.text
+            if product_name.lower() not in title.lower():
+                issues.append(f'{title} is not {product_name} related')
+
+    if start_page_number <= finish_page_number:
+        for page_number in range(start_page_number, finish_page_number + 1):
+            page_button = WebDriverWait(context.driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, f"//a[text()='{page_number}']")))
+            page_button.click()
+            sleep(2)  # Ожидание, чтобы страница загрузилась
+            check_items()
+    else:
+        for page_number in range(start_page_number, finish_page_number - 1, -1):
+            page_button = WebDriverWait(context.driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, f"//a[text()='{page_number}']")))
+            page_button.click()
+            sleep(2)  # Ожидание, чтобы страница загрузилась
+            check_items()
+
+    if issues:
+        raise Exception(f'Following issues discovered: {issues}')
 
