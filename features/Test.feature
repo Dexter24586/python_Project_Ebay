@@ -120,6 +120,6 @@ Feature: Ebay Regression
 
     Examples:
       | product_name | start_page_number | finish_page_number |
-      | dress        | 8            |   6          |
-      | iphone       | 3            |   6          |
+      | dress        | 12            |   13          |
+      | iphone       | 13            |   14          |
       | samsung      | 9            |   6          |

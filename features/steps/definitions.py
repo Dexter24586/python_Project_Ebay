@@ -290,12 +290,43 @@ def step_impl(context, our_search2, page_quantity1):
         raise Exception(f'Following issues discovered: {issues}')
 
 
+# @step('our items "{product_name}" are related on pages from "{start_page_number}" to "{finish_page_number}"')
+# def step_impl(context, product_name, start_page_number, finish_page_number):
+#     issues = []
+#
+#     start_page_number, finish_page_number = int(start_page_number), int(finish_page_number)
+#
+#     def check_items():
+#         all_items = WebDriverWait(context.driver, 10).until(
+#             EC.presence_of_all_elements_located((By.XPATH, "//li[contains(@id, 'item')]//span[@role='heading']"))
+#         )
+#
+#         for item in all_items:
+#             title = item.text
+#             if product_name.lower() not in title.lower():
+#                 issues.append(f'{title} is not {product_name} related')
+#
+#     if start_page_number <= finish_page_number:
+#         for page_number in range(start_page_number, finish_page_number + 1):
+#             page_button = WebDriverWait(context.driver, 10).until(
+#                 EC.element_to_be_clickable((By.XPATH, f"//a[text()='{page_number}']")))
+#             page_button.click()
+#             sleep(2)  # Ожидание, чтобы страница загрузилась
+#             check_items()
+#     else:
+#         for page_number in range(start_page_number, finish_page_number - 1, -1):
+#             page_button = WebDriverWait(context.driver, 10).until(
+#                 EC.element_to_be_clickable((By.XPATH, f"//a[text()='{page_number}']")))
+#             page_button.click()
+#             sleep(2)  # Ожидание, чтобы страница загрузилась
+#             check_items()
+#
+#     if issues:
+#         raise Exception(f'Following issues discovered: {issues}')
 @step('our items "{product_name}" are related on pages from "{start_page_number}" to "{finish_page_number}"')
 def step_impl(context, product_name, start_page_number, finish_page_number):
     issues = []
-
     start_page_number, finish_page_number = int(start_page_number), int(finish_page_number)
-
     def check_items():
         all_items = WebDriverWait(context.driver, 10).until(
             EC.presence_of_all_elements_located((By.XPATH, "//li[contains(@id, 'item')]//span[@role='heading']"))
@@ -306,20 +337,42 @@ def step_impl(context, product_name, start_page_number, finish_page_number):
             if product_name.lower() not in title.lower():
                 issues.append(f'{title} is not {product_name} related')
 
+    def go_to_page(page_number):
+        while True:
+            try:
+                # Проверяем, есть ли указанная страница на текущей странице
+                page_button = context.driver.find_element(By.XPATH, f"//a[text()='{page_number}']")
+                page_button.click()
+                sleep(2)  # Ожидание, чтобы страница загрузилась
+                return True
+            except:
+                try:
+                    # Если страницы нет, кликаем на кнопку "Next"
+                    next_page_button = WebDriverWait(context.driver, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, "//a[@aria-label='Go to next search page']"))
+                    )
+                    next_page_button.click()
+                    sleep(2)  # Ожидание, чтобы страница загрузилась
+                except:
+                    # Если кнопка "Next" отсутствует, значит, достигли конца доступных страниц
+                    print(f"Page {page_number} does not exist and no more pages available.")
+                    return False
+
+    # Переход к стартовой странице
+    if not go_to_page(start_page_number):
+        raise Exception(f'Start page {start_page_number} does not exist.')
+
+    # Цикл проверки страниц от стартовой до конечной
     if start_page_number <= finish_page_number:
         for page_number in range(start_page_number, finish_page_number + 1):
-            page_button = WebDriverWait(context.driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, f"//a[text()='{page_number}']")))
-            page_button.click()
-            sleep(2)  # Ожидание, чтобы страница загрузилась
             check_items()
+            if not go_to_page(page_number + 1):
+                break
     else:
         for page_number in range(start_page_number, finish_page_number - 1, -1):
-            page_button = WebDriverWait(context.driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, f"//a[text()='{page_number}']")))
-            page_button.click()
-            sleep(2)  # Ожидание, чтобы страница загрузилась
             check_items()
+            if not go_to_page(page_number - 1):
+                break
 
     if issues:
         raise Exception(f'Following issues discovered: {issues}')
