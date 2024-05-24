@@ -122,4 +122,4 @@ Feature: Ebay Regression
       | product_name | start_page_number | finish_page_number |
       | dress        | 12            |   13          |
       | iphone       | 13            |   14          |
-      | samsung      | 9            |   6          |
+      | samsung      | 9             |   6           |
