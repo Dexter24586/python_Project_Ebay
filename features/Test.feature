@@ -1,7 +1,9 @@
 Feature: Ebay Regression
 
+  Background: Generic navigation
+    Given Navigate to eBay.com
+
  Scenario: Search bar Verification
-    Given Navigate to "ebay.com"
     And In search bar type "dress"
     And Click the "Search" button
     Then Click the first dress from the page
@@ -11,17 +13,14 @@ Feature: Ebay Regression
 
 
  Scenario: "Sign in" page is loading verification
-    Given Navigate to "ebay.com"
     And Click the "Sign In" button
     Then Verify that "Sign In" page is loaded
 
  Scenario: "register" page is loading verification
-    Given Navigate to "ebay.com"
     And Click the "register" button
     Then Verify that "register" page is loaded
 
   Scenario Outline: page loading verification
-    Given Navigate to "ebay.com"
     And Click "<button_name>" button
     Then Verify that "<page_title>" page is loaded with title
 
@@ -35,61 +34,50 @@ Feature: Ebay Regression
 
 
   Scenario: After clicking on "Watchlist" button "Sign In" button is displayed
-    Given Navigate to "ebay.com"
     And Click the "Watchlist" button
     Then Verify that "Sign In Watchlist" button is displayed
 
   Scenario: "My eBay" page is loading verification
-    Given Navigate to "ebay.com"
     And Click the "My eBay" button
     Then Verify that "My eBay" page is loaded
 
   Scenario: "My eBay" drop down list is displayed
-    Given Navigate to "ebay.com"
     And Hover over "My eBay" button
     Then Verify that "My eBay" drop down list is displayed
 
   Scenario: After hover over on "Alert" button "Sign In" button is displayed
-    Given Navigate to "ebay.com"
     And Hover over "Alert" button
     Then Verify that "Sign In Alert" button is displayed
 
   Scenario: "Cart" page is loading verification
-    Given Navigate to "ebay.com"
     And Click the "Cart" button
     Then Verify that "Cart" page is loaded
 
   Scenario: After hover over on "Cart" button "Your cart is empty" pop up message is displayed
-    Given Navigate to "ebay.com"
     And Hover over "Cart" button
     Then Verify that "Your cart is empty" pop up message is displayed
 
   Scenario: Filter validation for style
-    Given Navigate to "ebay.com"
     And In search bar type "dress"
     And Click the "Search" button
     Then Style filter "Pattern" by "Solid"
 
   Scenario: Filter validation for size
-    Given Navigate to "ebay.com"
     And In search bar type "dress"
     And Click the "Search" button
     Then Size filter "Junior" for "Juniors Size" and "XS"
 
   Scenario: Filter validation for Color
-    Given Navigate to "ebay.com"
     And In search bar type "dress"
     And Click the "Search" button
     Then Choose "Black" color
 
   Scenario: Filter validation for Buying format or Item Location
-    Given Navigate to "ebay.com"
     And In search bar type "dress"
     And Click the "Search" button
     Then in "Item Location" click "US Only"
 
   Scenario Outline: Search validation
-    Given Navigate to "ebay.com"
     And In search bar type "<our_search1>"
     Then all items are "<our_search1>" related
 
@@ -100,7 +88,6 @@ Feature: Ebay Regression
       | samsung     |
 
   Scenario Outline: Search validation on X pages
-    Given Navigate to "ebay.com"
     And In search bar type "<our_search2>"
     And Click the "Search" button
     Then all items are "<our_search2>" related on "<page_quantity1>" amount of pages
@@ -113,7 +100,6 @@ Feature: Ebay Regression
 
 
   Scenario Outline: Search validation from X page to Y page
-    Given Navigate to "ebay.com"
     And In search bar type "<product_name>"
     And Click the "Search" button
     Then our items "<product_name>" are related on pages from "<start_page_number>" to "<finish_page_number>"
@@ -123,3 +109,21 @@ Feature: Ebay Regression
       | dress        | 12            |   13          |
       | iphone       | 13            |   14          |
       | samsung      | 9             |   6           |
+
+
+  Scenario Outline: Validate Shop By category menu
+    And I click "Shop by category" button
+    And menu "Shop by category" is displayed
+    Then "<category>" contains it's "<subcategories>"
+
+    Examples:
+      | category | subcategories |
+      | Motors | Parts & accessories; Cars & trucks; Motorcycles; Other vehicles |
+      | Clothing & Accessories | Women; Men; Handbags; Collectible Sneakers |
+      | Sporting goods | Hunting Equipment; Golf Equipment; Outdoor sports; Cycling Equipment |
+      | Electronics | Computers, Tablets & Network Hardware; Cell Phones, Smart Watches & Accessories; Video Games & Consoles; Cameras & Photo |
+      | Business & Industrial | Modular & Pre-Fabricated Buildings; Test, Measurement & Inspection Equipment; Heavy Equipment, Parts & Attachments; Restaurant & Food Service |
+      | Jewelry & Watches | Luxury Watches; Wristwatches; Fashion Jewelry; Fine Jewelry |
+      | Collectibles & Art | Trading Cards; Collectibles; Coins & Paper Money; Sports Memorabilia |
+      | Home & garden | Yard, Garden & Outdoor Living Items; Tools & Workshop Equipment; Home Improvement; Kitchen, Dining & Bar Supplies |
+      | Other categories | Books, Movies & Music; Toys & Hobbies; Health & Beauty; Baby Essentials |

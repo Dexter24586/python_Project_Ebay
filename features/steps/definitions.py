@@ -10,10 +10,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 from time import sleep
 
 
-@step('Navigate to "{url}"')
-def step_impl(context, url):
-    context.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-    context.driver.get(f"https://www.{url}")
+@step('Navigate to eBay.com')
+def step_impl(context):
+    # context.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+    context.driver.get(context.url)
 
 
 @step('In search bar type "{input_var}"')
@@ -376,4 +376,46 @@ def step_impl(context, product_name, start_page_number, finish_page_number):
 
     if issues:
         raise Exception(f'Following issues discovered: {issues}')
+
+
+@step('I click "Shop by category" button')
+def step_impl(context):
+    try:
+        shop_by_cat_button = WebDriverWait(context.driver, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, "//button[@id='gh-shop-a']")))
+        shop_by_cat_button.click()
+        sleep(2)
+
+    except Exception as e: print(f"Exception occurred: {e}")
+
+
+@step('menu "Shop by category" is displayed')
+def step_impl(context):
+    try:
+        shop_by_category_menu = WebDriverWait(context.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//div[@id='gh-sbc-o']"))
+        )
+        assert shop_by_category_menu.is_displayed(), "Menu 'Shop by category' is not displayed"
+    except Exception as e:
+        raise AssertionError(f"An error occurred: {e}")
+
+
+@step('"{category}" contains it\'s "{subcategories}"')
+def step_impl(context, category, subcategories):
+    issues = []
+
+    expected_subcategories = [subcategory.strip() for subcategory in subcategories.split(';')]
+    category_xpath = f"//h3/a[text() = '{category}']"
+    category_element = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, category_xpath)))
+
+    subcategory_xpath = f"//h3[a[text()='{category}']]/following-sibling::ul[1]//a"
+    subcategory_elements = category_element.find_elements(By.XPATH, subcategory_xpath)
+    actual_subcategories = [elem.text.strip() for elem in subcategory_elements]
+
+    for expected_subcategory in expected_subcategories:
+        if expected_subcategory not in actual_subcategories:
+            issues.append(f'Subcategory "{expected_subcategory}" not found under category "{category}"')
+
+    assert len(issues) == 0, f'Issues found:\n' + '\n'.join(issues)
 
