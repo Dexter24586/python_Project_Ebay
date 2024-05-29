@@ -311,14 +311,14 @@ def step_impl(context, our_search2, page_quantity1):
 #             page_button = WebDriverWait(context.driver, 10).until(
 #                 EC.element_to_be_clickable((By.XPATH, f"//a[text()='{page_number}']")))
 #             page_button.click()
-#             sleep(2)  # Ожидание, чтобы страница загрузилась
+#             sleep(2)
 #             check_items()
 #     else:
 #         for page_number in range(start_page_number, finish_page_number - 1, -1):
 #             page_button = WebDriverWait(context.driver, 10).until(
 #                 EC.element_to_be_clickable((By.XPATH, f"//a[text()='{page_number}']")))
 #             page_button.click()
-#             sleep(2)  # Ожидание, чтобы страница загрузилась
+#             sleep(2)
 #             check_items()
 #
 #     if issues:
@@ -340,21 +340,18 @@ def step_impl(context, product_name, start_page_number, finish_page_number):
     def go_to_page(page_number):
         while True:
             try:
-                # Проверяем, есть ли указанная страница на текущей странице
                 page_button = context.driver.find_element(By.XPATH, f"//a[text()='{page_number}']")
                 page_button.click()
-                sleep(2)  # Ожидание, чтобы страница загрузилась
+                sleep(2)
                 return True
             except:
                 try:
-                    # Если страницы нет, кликаем на кнопку "Next"
                     next_page_button = WebDriverWait(context.driver, 10).until(
                         EC.element_to_be_clickable((By.XPATH, "//a[@aria-label='Go to next search page']"))
                     )
                     next_page_button.click()
-                    sleep(2)  # Ожидание, чтобы страница загрузилась
+                    sleep(2)
                 except:
-                    # Если кнопка "Next" отсутствует, значит, достигли конца доступных страниц
                     print(f"Page {page_number} does not exist and no more pages available.")
                     return False
 
@@ -362,7 +359,6 @@ def step_impl(context, product_name, start_page_number, finish_page_number):
     if not go_to_page(start_page_number):
         raise Exception(f'Start page {start_page_number} does not exist.')
 
-    # Цикл проверки страниц от стартовой до конечной
     if start_page_number <= finish_page_number:
         for page_number in range(start_page_number, finish_page_number + 1):
             check_items()
@@ -418,4 +414,3 @@ def step_impl(context, category, subcategories):
             issues.append(f'Subcategory "{expected_subcategory}" not found under category "{category}"')
 
     assert len(issues) == 0, f'Issues found:\n' + '\n'.join(issues)
-
