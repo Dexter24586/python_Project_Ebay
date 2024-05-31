@@ -342,7 +342,6 @@ def step_impl(context, product_name, start_page_number, finish_page_number):
             try:
                 page_button = context.driver.find_element(By.XPATH, f"//a[text()='{page_number}']")
                 page_button.click()
-                sleep(2)
                 return True
             except:
                 try:
@@ -350,7 +349,6 @@ def step_impl(context, product_name, start_page_number, finish_page_number):
                         EC.element_to_be_clickable((By.XPATH, "//a[@aria-label='Go to next search page']"))
                     )
                     next_page_button.click()
-                    sleep(2)
                 except:
                     print(f"Page {page_number} does not exist and no more pages available.")
                     return False
@@ -389,7 +387,7 @@ def step_impl(context):
 def step_impl(context):
     try:
         shop_by_category_menu = WebDriverWait(context.driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//div[@id='gh-sbc-o']"))
+            EC.visibility_of_element_located((By.XPATH, "//div[@id='gh-sbc-o']"))
         )
         assert shop_by_category_menu.is_displayed(), "Menu 'Shop by category' is not displayed"
     except Exception as e:
