@@ -1,7 +1,7 @@
 from selenium.webdriver.support import expected_conditions as EC
 from behave import step
 from selenium import webdriver
-from selenium.common import NoSuchElementException
+from selenium.common import NoSuchElementException, TimeoutException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
@@ -18,29 +18,34 @@ def step_impl(context):
 
 @step('In search bar type "{input_var}"')
 def step_impl(context, input_var):
-    searchbar = context.driver.find_element(By.XPATH, "//input[@type='text']")
+    # searchbar = WebDriverWait(context.driver, 10).until(EC.visibility_of_element_located(By.XPATH, "//input[@type='text']"))
+    searchbar = WebDriverWait(context.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//input[@type='text']")), message= "Can't find the search bar")
     searchbar.send_keys(f"{input_var}")
 
 
 @step('Click the "Search" button')
 def step_impl(context):
-    s_button = context.driver.find_element(By.XPATH, "//input[@type='submit']")
+    # s_button = context.driver.find_element(By.XPATH, "//input[@type='submit']")
+    s_button = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//input[@type='submit']")), message="Can't find the search button")
     s_button.click()
-    sleep(1)
 
 
 @step("Click the first dress from the page")
 def step_impl(context):
-    first_item = context.driver.find_element(By.XPATH, "(//div[@class='srp-items-carousel__items-container']//li[@class='carousel__snap-point srp-items-carousel__list-item'])[1]")
+    # first_item = context.driver.find_element(By.XPATH, "(//div[@class='srp-items-carousel__items-container']//li[@class='carousel__snap-point srp-items-carousel__list-item'])[1]")
+    first_item = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "(//div[@class='srp-items-carousel__items-container']//li[@class='carousel__snap-point srp-items-carousel__list-item'])[1]")), message="Can't find the first item")
     first_item.click()
-    sleep(3)
 
 
 @step('Click the "Sign In" button')
 def step_impl(context):
-    sign_in_button = context.driver.find_element(By.XPATH, "//span[@id = 'gh-ug']/a[text() = 'Sign in']")
+    # sign_in_button = context.driver.find_element(By.XPATH, "//span[@id = 'gh-ug']/a[text() = 'Sign in']")
+    sign_in_button = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        "//span[@id = 'gh-ug']/a[text() = 'Sign in']")), message="Can't find sign in button")
     sign_in_button.click()
-    sleep(1)
 
 
 @step('Verify that "Sign In" page is loaded')
@@ -55,9 +60,12 @@ def step_impl(context):
 
 @step('Click the "register" button')
 def step_impl(context):
-    register_button = context.driver.find_element(By.XPATH, "//span[@id='gh-ug-flex']/a[text() = 'register']")
+    # register_button = context.driver.find_element(By.XPATH, "//span[@id='gh-ug-flex']/a[text() = 'register']")
+    register_button = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        "//span[@id='gh-ug-flex']/a[text() = 'register']")),
+        message="Can't find register button")
     register_button.click()
-    sleep(1)
 
 
 @step('Verify that "register" page is loaded')
@@ -72,14 +80,21 @@ def step_impl(context):
 
 @step('Click "{var1}" button')
 def step_impl(context, var1):
-    daily_deals_button = context.driver.find_element(By.XPATH, f"//*[contains(@class, 'gh-') and normalize-space(text()) = '{var1}']")
-    daily_deals_button.click()
-    sleep(1)
+    # daily_deals_button = context.driver.find_element(By.XPATH, f"//*[contains(@class, 'gh-') and normalize-space(text()) = '{var1}']")
+    top_menu_button = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        f"//*[contains(@class, 'gh-') and normalize-space(text()) = '{var1}']")),
+        message="Can't find top menu button")
+    top_menu_button.click()
 
 
 @step('Verify that "{page_title}" page is loaded with title')
 def step_impl(context, page_title):
-    title_name = context.driver.find_element(By.XPATH, f"//title[contains(text(), '{page_title}')]")
+    # title_name = context.driver.find_element(By.XPATH, f"//title[contains(text(), '{page_title}')]")
+    title_name = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        f"//title[contains(text(), '{page_title}')]")),
+        message=f"Title is not equal to {page_title}")
     expected_title = "Daily Deals on eBay | Best deals and Free Shipping"
     if title_name == expected_title:
         print("Page is loaded")
@@ -89,15 +104,22 @@ def step_impl(context, page_title):
 
 @step('Click the "Watchlist" button')
 def step_impl(context):
-    watchlist_button = context.driver.find_element(By.XPATH, "//a[@class= 'gh-eb-li-a gh-rvi-menu watchlist-menu'][text() = 'Watchlist']")
+    # watchlist_button = context.driver.find_element(By.XPATH, "//a[@class= 'gh-eb-li-a gh-rvi-menu watchlist-menu'][text() = 'Watchlist']")
+    watchlist_button = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        "//a[@class= 'gh-eb-li-a gh-rvi-menu watchlist-menu'][text() = 'Watchlist']")),
+        message="Can't find watchlist button")
     watchlist_button.click()
-    sleep(1)
 
 
 @step('Verify that "Sign In Watchlist" button is displayed')
 def step_impl(context):
     try:
-        sign_in_watchlist_button = context.driver.find_element(By.XPATH, "//div[@class='rvi__title']/a[text()='sign in']")
+        # sign_in_watchlist_button = context.driver.find_element(By.XPATH, "//div[@class='rvi__title']/a[text()='sign in']")
+        sign_in_watchlist_button = WebDriverWait(context.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            "//div[@class='rvi__title']/a[text()='sign in']")),
+            message="Can't find sign in watchlist button")
         print("Sign In button is present.")
     except NoSuchElementException:
         print("Sign In button is not present.")
@@ -108,9 +130,12 @@ def step_impl(context):
 
 @step('Click the "My eBay" button')
 def step_impl(context):
-    my_ebay_button = context.driver.find_element(By.XPATH, "//a[@class= 'gh-eb-li-a gh-rvi-menu' and text() = 'My eBay']")
+    # my_ebay_button = context.driver.find_element(By.XPATH, "//a[@class= 'gh-eb-li-a gh-rvi-menu' and text() = 'My eBay']")
+    my_ebay_button = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        "//a[@class= 'gh-eb-li-a gh-rvi-menu' and text() = 'My eBay']")),
+        message="Can't find My eBay button")
     my_ebay_button.click()
-    sleep(1)
 
 
 @step('Verify that "My eBay" page is loaded')
@@ -125,16 +150,23 @@ def step_impl(context):
 
 @step('Hover over "My eBay" button')
 def step_impl(context):
-    my_ebay_button = context.driver.find_element(By.XPATH, "//a[@class= 'gh-eb-li-a gh-rvi-menu' and text() = 'My eBay']")
+    # my_ebay_button = context.driver.find_element(By.XPATH, "//a[@class= 'gh-eb-li-a gh-rvi-menu' and text() = 'My eBay']")
+    my_ebay_button = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        "//a[@class= 'gh-eb-li-a gh-rvi-menu' and text() = 'My eBay']")),
+        message="Can't find My eBay button")
     actions = ActionChains(context.driver)
     actions.move_to_element(my_ebay_button).perform()
-    sleep(1)
 
 
 @step('Verify that "My eBay" drop down list is displayed')
 def step_impl(context):
     try:
-        drop_down_list = context.driver.find_element(By.XPATH, "//ul[@id='gh-ul-nav']")
+        # drop_down_list = context.driver.find_element(By.XPATH, "//ul[@id='gh-ul-nav']")
+        drop_down_list = WebDriverWait(context.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            "//ul[@id='gh-ul-nav']")),
+            message="Can't find drop down list button")
         print("List is present")
     except NoSuchElementException:
         print("List is not present.")
@@ -145,16 +177,23 @@ def step_impl(context):
 
 @step('Hover over "Alert" button')
 def step_impl(context):
-    alert_button = context.driver.find_element(By.XPATH, "//i[@class= 'gh-sprRetina' and text() = 'Notification']")
+    # alert_button = context.driver.find_element(By.XPATH, "//i[@class= 'gh-sprRetina' and text() = 'Notification']")
+    alert_button = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        "//i[@class= 'gh-sprRetina' and text() = 'Notification']")),
+        message="Can't find alert button")
     actions = ActionChains(context.driver)
     actions.move_to_element(alert_button).perform()
-    sleep(1)
 
 
 @step('Verify that "Sign In Alert" button is displayed')
 def step_impl(context):
     try:
-        sign_in_alert_button = context.driver.find_element(By.XPATH, "//div[@id='ghn-err']//span[text()='sign-in']")
+        # sign_in_alert_button = context.driver.find_element(By.XPATH, "//div[@id='ghn-err']//span[text()='sign-in']")
+        sign_in_alert_button = WebDriverWait(context.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            "//div[@id='ghn-err']//span[text()='sign-in']")),
+            message="Can't find sign in alert button")
         assert sign_in_alert_button.is_displayed(), "'Sign In Alert' button is displayed"
         print("'Sign In Alert' button is displayed")
     except NoSuchElementException:
@@ -165,9 +204,13 @@ def step_impl(context):
 
 @step('Click the "Cart" button')
 def step_impl(context):
-    cart_button = context.driver.find_element(By.XPATH, "//a[@aria-label='Your shopping cart']")
+    # cart_button = context.driver.find_element(By.XPATH, "//a[@aria-label='Your shopping cart']")
+    cart_button = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        "//a[@aria-label='Your shopping cart']")),
+        message="Can't find sign in cart button")
     cart_button.click()
-    sleep(1)
+
 
 
 @step('Verify that "Cart" page is loaded')
@@ -182,16 +225,23 @@ def step_impl(context):
 
 @step('Hover over "Cart" button')
 def step_impl(context):
-    cart_button = context.driver.find_element(By.XPATH, "//a[@aria-label='Your shopping cart']")
+    # cart_button = context.driver.find_element(By.XPATH, "//a[@aria-label='Your shopping cart']")
+    cart_button = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        "//a[@aria-label='Your shopping cart']")),
+        message="Can't find sign in cart button")
     actions = ActionChains(context.driver)
     actions.move_to_element(cart_button).perform()
-    sleep(1)
 
 
 @step('Verify that "Your cart is empty" pop up message is displayed')
 def step_impl(context):
     try:
-        empty_cart_text = context.driver.find_element(By.XPATH, "//h2[@class='gh-minicart-header__title ']")
+        # empty_cart_text = context.driver.find_element(By.XPATH, "//h2[@class='gh-minicart-header__title ']")
+        empty_cart_text = WebDriverWait(context.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            "//h2[@class='gh-minicart-header__title ']")),
+            message="Can't find empty cart TEXT")
         assert empty_cart_text.is_displayed(), "'Your cart is empty' message should be visible."
         print("'Your cart is empty' message is displayed.")
     except NoSuchElementException:
@@ -208,25 +258,33 @@ def step_impl(context):
         if window_handle != context.current_window:
              context.driver.switch_to.window(window_handle)
              break
-    sleep(1)
 
-    add_to_cart_button = context.driver.find_element(By.XPATH, "//span[@class='ux-call-to-action__text'][text()='Add to cart']")
+    # add_to_cart_button = context.driver.find_element(By.XPATH, "//span[@class='ux-call-to-action__text'][text()='Add to cart']")
+    add_to_cart_button = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        "//span[@class='ux-call-to-action__text'][text()='Add to cart']")),
+        message="Can't find add to cart button")
     add_to_cart_button.click()
-    sleep(1)
 
 @step('Style filter "{filter_name}" by "{value}"')
 def filter_by_value(context, filter_name, value):
     expand_button = context.driver.find_element(By.XPATH, f"//div[text()='{filter_name}']")
     if filter_name.lower() == "Style" or "Pattern" or "Season" or "Theme":
        expand_button.click()
-       filter_option = context.driver.find_element(By.XPATH, f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value}']]//input")
+       # filter_option = context.driver.find_element(By.XPATH, f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value}']]//input")
+       filter_option = WebDriverWait(context.driver, 10).until(
+           EC.presence_of_element_located((By.XPATH,
+                                           f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value}']]//input")),
+           message="Can't find filter option")
        filter_option.click()
        sleep(3)
 
     else:
-         filter_option = context.driver.find_element(By.XPATH, f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value}']]//input" )
-         filter_option.click()
-         sleep(3)
+        filter_option = WebDriverWait(context.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value}']]//input")),
+            message="Can't find filter option")
+        filter_option.click()
 
 
 
@@ -234,32 +292,52 @@ def filter_by_value(context, filter_name, value):
 @step('Size filter "{size_name}" for "{size_type}" and "{value}"')
 def filter_by_size(context, size_name:str, size_type, value):
     if size_name.lower() == "Regular".lower():
-        filter_option = context.driver.find_element(By.XPATH, f"'//li[@class='x-refine__main__list '][.//div[text()='Size']]//div[@class='size-component__container']//span[text()='{size_type}']/following-sibling::span[text()='{value}]")
+        # filter_option = context.driver.find_element(By.XPATH, f"'//li[@class='x-refine__main__list '][.//div[text()='Size']]//div[@class='size-component__container']//span[text()='{size_type}']/following-sibling::span[text()='{value}]")
+        filter_option = WebDriverWait(context.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            f"'//li[@class='x-refine__main__list '][.//div[text()='Size']]//div[@class='size-component__container']//span[text()='{size_type}']/following-sibling::span[text()='{value}]")),
+            message="Can't find filter option")
         filter_option.click()
         sleep(3)
     else:
-        button = context.driver.find_element(By.XPATH, f"//h4[contains(text(),'{size_name}')]")
+        # button = context.driver.find_element(By.XPATH, f"//h4[contains(text(),'{size_name}')]")
+        button = WebDriverWait(context.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            f"//h4[contains(text(),'{size_name}')]")),
+            message="Can't find size option")
         button.click()
-        sleep(3)
-        filter_option = context.driver.find_element(By.XPATH, f"//li[@class='x-refine__main__list '][.//div[text()='Size']]//div[@class='size-component__container']//span[text()='{size_type}']/following-sibling::span[text()='{value}']" )
+        # filter_option = context.driver.find_element(By.XPATH, f"//li[@class='x-refine__main__list '][.//div[text()='Size']]//div[@class='size-component__container']//span[text()='{size_type}']/following-sibling::span[text()='{value}']" )
+        filter_option = WebDriverWait(context.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            f"//li[@class='x-refine__main__list '][.//div[text()='Size']]//div[@class='size-component__container']//span[text()='{size_type}']/following-sibling::span[text()='{value}']")),
+            message="Can't find size filter option option")
         filter_option.click()
-        sleep(3)
 
 @step('Choose "{color_value}" color')
 def filter_color(context, color_value):
-    color_button = context.driver.find_element(By.XPATH, f"//span[text()='{color_value}']")
+    # color_button = context.driver.find_element(By.XPATH, f"//span[text()='{color_value}']")
+    color_button = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        f"//span[text()='{color_value}']")),
+        message="Can't find color button")
     color_button.click()
-    sleep(3)
 @step('in "{option1}" click "{option2}"')
 def step_impl(context, option1, option2):
-    radio_button = context.driver.find_element(By.XPATH, f"//li[@class='x-refine__main__list '][.//div[text()='{option1}']]//span[text()='{option2}']/../..//input[@type='radio']")
+    # radio_button = context.driver.find_element(By.XPATH, f"//li[@class='x-refine__main__list '][.//div[text()='{option1}']]//span[text()='{option2}']/../..//input[@type='radio']")
+    radio_button = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        f"//li[@class='x-refine__main__list '][.//div[text()='{option1}']]//span[text()='{option2}']/../..//input[@type='radio']")),
+        message="Can't find radio button")
     radio_button.click()
-    sleep(5)
 
 
 @step('all items are "{desired_title}" related')
 def check_all_items_titles(context, desired_title):
-    all_items = context.driver.find_elements(By.XPATH, "//li[contains(@id, 'item')]//span[@role='heading']")
+    # all_items = context.driver.find_elements(By.XPATH, "//li[contains(@id, 'item')]//span[@role='heading']")
+    all_items = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        "//li[contains(@id, 'item')]//span[@role='heading']")),
+        message="Can't find all items titles")
     issues = []
 
     for item in all_items:
@@ -276,14 +354,21 @@ def step_impl(context, our_search2, page_quantity1):
     page_quantity = int(page_quantity1)
     issues = []
     for page_number in range(1, page_quantity+1):
-        all_items = context.driver.find_elements(By.XPATH, "//li[contains(@id, 'item')]//span[@role='heading']")
+        all_items = WebDriverWait(context.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            "//li[contains(@id, 'item')]//span[@role='heading']")),
+            message="Can't find all items titles")
 
         for item in all_items:
             title = item.text
             if our_search2.lower() not in title.lower():
                issues.append(f'{title} is not {our_search2} related')
 
-        page_button = context.driver.find_element(By.XPATH, f"//a[text()='{page_number + 1}']")
+        # page_button = context.driver.find_element(By.XPATH, f"//a[text()='{page_number + 1}']")
+        page_button = WebDriverWait(context.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            f"//a[text()='{page_number + 1}']")),
+            message="Can't find page button")
         page_button.click()
 
     if issues:
@@ -329,9 +414,7 @@ def step_impl(context, product_name, start_page_number, finish_page_number):
     start_page_number, finish_page_number = int(start_page_number), int(finish_page_number)
     def check_items():
         all_items = WebDriverWait(context.driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, "//li[contains(@id, 'item')]//span[@role='heading']"))
-        )
-
+            EC.presence_of_all_elements_located((By.XPATH, "//li[contains(@id, 'item')]//span[@role='heading']")), message="Can't find page button")
         for item in all_items:
             title = item.text
             if product_name.lower() not in title.lower():
@@ -340,14 +423,18 @@ def step_impl(context, product_name, start_page_number, finish_page_number):
     def go_to_page(page_number):
         while True:
             try:
-                page_button = context.driver.find_element(By.XPATH, f"//a[text()='{page_number}']")
+                # page_button = context.driver.find_element(By.XPATH, f"//a[text()='{page_number}']")
+                page_button = WebDriverWait(context.driver, 10).until(
+                    EC.presence_of_all_elements_located(
+                        (By.XPATH, f"//a[text()='{page_number}']")),
+                    message="Can't find page button")
                 page_button.click()
                 return True
             except:
                 try:
                     next_page_button = WebDriverWait(context.driver, 10).until(
-                        EC.element_to_be_clickable((By.XPATH, "//a[@aria-label='Go to next search page']"))
-                    )
+                        EC.element_to_be_clickable((By.XPATH, "//a[@aria-label='Go to next search page']")),
+                    message="Can't find next page button")
                     next_page_button.click()
                 except:
                     print(f"Page {page_number} does not exist and no more pages available.")
@@ -376,9 +463,9 @@ def step_impl(context, product_name, start_page_number, finish_page_number):
 def step_impl(context):
     try:
         shop_by_cat_button = WebDriverWait(context.driver, 10).until(
-                        EC.element_to_be_clickable((By.XPATH, "//button[@id='gh-shop-a']")))
+                        EC.element_to_be_clickable((By.XPATH, "//button[@id='gh-shop-a']")),
+                    message="Can't find shop by category button")
         shop_by_cat_button.click()
-        sleep(2)
 
     except Exception as e: print(f"Exception occurred: {e}")
 
@@ -387,8 +474,8 @@ def step_impl(context):
 def step_impl(context):
     try:
         shop_by_category_menu = WebDriverWait(context.driver, 10).until(
-            EC.visibility_of_element_located((By.XPATH, "//div[@id='gh-sbc-o']"))
-        )
+            EC.visibility_of_element_located((By.XPATH, "//div[@id='gh-sbc-o']")),
+            message="Can't find shop by category button")
         assert shop_by_category_menu.is_displayed(), "Menu 'Shop by category' is not displayed"
     except Exception as e:
         raise AssertionError(f"An error occurred: {e}")
@@ -401,10 +488,14 @@ def step_impl(context, category, subcategories):
     expected_subcategories = [subcategory.strip() for subcategory in subcategories.split(';')]
     category_xpath = f"//h3/a[text() = '{category}']"
     category_element = WebDriverWait(context.driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, category_xpath)))
+        EC.presence_of_element_located((By.XPATH, category_xpath)),
+                    message="Can't find category element")
 
     subcategory_xpath = f"//h3[a[text()='{category}']]/following-sibling::ul[1]//a"
-    subcategory_elements = category_element.find_elements(By.XPATH, subcategory_xpath)
+    # subcategory_elements = category_element.find_elements(By.XPATH, subcategory_xpath)
+    subcategory_elements = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, subcategory_xpath)),
+        message="Can't find category element")
     actual_subcategories = [elem.text.strip() for elem in subcategory_elements]
 
     for expected_subcategory in expected_subcategories:
@@ -412,3 +503,64 @@ def step_impl(context, category, subcategories):
             issues.append(f'Subcategory "{expected_subcategory}" not found under category "{category}"')
 
     assert len(issues) == 0, f'Issues found:\n' + '\n'.join(issues)
+
+
+@step("verify that slider is active")
+def step_impl(context):
+    try:
+        play_pause_button = WebDriverWait(context.driver, 10).until(
+            EC.visibility_of_element_located((By.XPATH, "//button[@aria-label='Pause Banner Carousel']"))
+        )
+        print("Slider is active as expected")
+    except TimeoutException:
+        raise AssertionError("Slider is not active")
+
+@step('I click on {play_or_pause_button} button')
+def step_impl(context, play_or_pause_button):
+    try:
+        button = WebDriverWait(context.driver, 10).until(
+            EC.visibility_of_element_located((By.XPATH, f"//button[@aria-label='{play_or_pause_button} Banner Carousel']"))
+        )
+        button.click()
+    except TimeoutException:
+        raise AssertionError(f"{play_or_pause_button} button is not active")
+
+@step("verify that slider is paused")
+def step_impl(context):
+    try:
+        button = WebDriverWait(context.driver, 10).until(
+            EC.visibility_of_element_located((By.XPATH, "//button[@aria-label='Play Banner Carousel']"))
+        )
+        print("Slider is paused as expected")
+    except TimeoutException:
+        raise AssertionError("Slider is not paused")
+
+@step("verify that slide is changed to the next one")
+def step_impl(context):
+    try:
+        next_slide_dot = WebDriverWait(context.driver, 10).until(
+            EC.visibility_of_element_located((By.XPATH, "//div[@class ='vl-carousel--dots']/ul/li[2][@class='vl-carousel--dots__active']"))
+        )
+        print("Slide is changed to the next one as expected")
+    except TimeoutException:
+        raise AssertionError("Slide did not change to the next one")
+
+@step("verify that slide is changed to the previous one")
+def step_impl(context):
+    try:
+        previous_slide_dot = WebDriverWait(context.driver, 10).until(
+            EC.visibility_of_element_located((By.XPATH, "//div[@class ='vl-carousel--dots']/ul/li[1][@class='vl-carousel--dots__active']"))
+        )
+        print("Slide is changed to the previous one as expected")
+    except TimeoutException:
+        raise AssertionError("Slide did not change to the previous one")
+
+
+@step("I click on {next_previous_button} button.")
+def step_impl(context, next_previous_button):
+    try:
+        button = WebDriverWait(context.driver, 10).until(
+            EC.visibility_of_element_located((By.XPATH, f"//button[@aria-label='{next_previous_button}']")))
+        button.click()
+    except TimeoutException:
+        raise AssertionError(f"{next_previous_button} button is not active")

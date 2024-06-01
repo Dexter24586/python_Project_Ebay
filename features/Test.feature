@@ -127,3 +127,12 @@ Feature: Ebay Regression
       | Collectibles & Art | Trading Cards; Collectibles; Coins & Paper Money; Sports Memorabilia |
       | Home & garden | Yard, Garden & Outdoor Living Items; Tools & Workshop Equipment; Home Improvement; Kitchen, Dining & Bar Supplies |
       | Other categories | Books, Movies & Music; Toys & Hobbies; Health & Beauty; Baby Essentials |
+
+  Scenario: Validate slide banner
+    And verify that slider is active
+    And I click on Pause button
+    And verify that slider is paused
+    And I click on Go to next banner button.
+    And verify that slide is changed to the next one
+    And I click on Go to previous banner button.
+    And verify that slide is changed to the previous one
