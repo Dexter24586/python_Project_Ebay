@@ -13,8 +13,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 def before_all(context):
-    context.username = 'Test User'
-    context.password = os.environ['SECRET']
+   ...
 def before_feature(context, feature):
     context.url = "https://www.ebay.com"
 def before_scenario(context, scenario):
