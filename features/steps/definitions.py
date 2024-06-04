@@ -269,22 +269,38 @@ def step_impl(context):
 @step('Style filter "{filter_name}" by "{value}"')
 def filter_by_value(context, filter_name, value):
     expand_button = context.driver.find_element(By.XPATH, f"//div[text()='{filter_name}']")
-    if filter_name.lower() == "Style" or "Pattern" or "Season" or "Theme":
+    if filter_name.lower() in ["style", "pattern", "season", "theme"]:
        expand_button.click()
-       # filter_option = context.driver.find_element(By.XPATH, f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value}']]//input")
        filter_option = WebDriverWait(context.driver, 10).until(
            EC.presence_of_element_located((By.XPATH,
                                            f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value}']]//input")),
            message="Can't find filter option")
        filter_option.click()
        sleep(3)
-
     else:
         filter_option = WebDriverWait(context.driver, 10).until(
-            EC.presence_of_element_located((By.XPATH,
-                                            f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value}']]//input")),
+            EC.visibility_of_element_located((By.XPATH,
+                                            f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value}']]")),
             message="Can't find filter option")
         filter_option.click()
+
+# @step('filter "{filter_name}" by "{value}"')
+# def filter_by_value(context, filter_name, value):
+#     if filter_name.lower() == "Style" or "Pattern" or "Season" or "Theme":
+#        # filter_option = context.driver.find_element(By.XPATH, f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value}']]//input")
+#        filter_option = WebDriverWait(context.driver, 10).until(
+#            EC.presence_of_element_located((By.XPATH,
+#                                            f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value}']]//input")),
+#            message="Can't find filter option")
+#        filter_option.click()
+#        sleep(3)
+#
+#     else:
+#         filter_option = WebDriverWait(context.driver, 10).until(
+#             EC.presence_of_element_located((By.XPATH,
+#                                             f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value}']]//input")),
+#             message="Can't find filter option")
+#         filter_option.click()
 
 
 
@@ -351,22 +367,36 @@ def check_all_items_titles(context, desired_title):
 @step('validate tha all dresses "{key_name}" are "{expected_value}"')
 def validate_detailed_filtering(context, key_name, expected_value):
     all_items = WebDriverWait(context.driver, 10).until(
-        EC.presence_of_element_located((By.XPATH,
+        EC.presence_of_all_elements_located((By.XPATH,
                                         "//li[contains(@id, 'item')]")),
         message="Can't find all items titles")
     main_window = context.driver.current_window_handle
     issues = []
 
     for item in all_items:
-        title = item.find_element((By.XPATH, ".//span[@role='heading']"))
-        product_url = item.find_element((By.XPATH,))
+        title = item.find_element(By.XPATH, ".//span[@role='heading']").text
+        product_url = item.find_element(By.XPATH,".//a[@class='s-item__link']").get_attribute('href')
         # get to the item page
-
-        # click
-        # switch
+        context.driver.execute_script(f"window.open('{product_url}');") #???
+        context.driver.switch_to.window(context.driver.window_handles[-1]) # switch to the latest tab/window
         # collect item specs
+        all_labels = WebDriverWait(context.driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, "//dt[@class='ux-labels-values__labels']//span[text()]")))
+        all_values = WebDriverWait(context.driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, "//dd[@class='ux-labels-values__values']//span[text()]")))
+        # get text from items
+        all_labels_text = []
+        for label in all_labels:
+            all_labels_text.append(label.text)
 
-        # do the validation
+        all_values_text = []
+        for value in all_values:
+            all_values_text.append(value.text)
+
+        item_specs = dict(zip(all_labels_text, all_values_text))
+        if key_name not in item_specs.keys():
+            issues.append(f'{title} does not have anything related to {key_name}')
+        elif item_specs [key_name] != expected_value: #????
+            issues.append(f'{title} is not related {expected_value} by {key_name} \n')
+
         # close
         context.driver.close()
         # switch
@@ -611,3 +641,5 @@ def step_impl(context, next_previous_button):
         button.click()
     except TimeoutException:
         raise AssertionError(f"{next_previous_button} button is not active")
+
+
