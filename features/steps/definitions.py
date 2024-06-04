@@ -348,6 +348,36 @@ def check_all_items_titles(context, desired_title):
     if issues:
         raise Exception(f'Following issues discovered: {issues}')
 
+@step('validate tha all dresses "{key_name}" are "{expected_value}"')
+def validate_detailed_filtering(context, key_name, expected_value):
+    all_items = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        "//li[contains(@id, 'item')]")),
+        message="Can't find all items titles")
+    main_window = context.driver.current_window_handle
+    issues = []
+
+    for item in all_items:
+        title = item.find_element((By.XPATH, ".//span[@role='heading']"))
+        product_url = item.find_element((By.XPATH,))
+        # get to the item page
+
+        # click
+        # switch
+        # collect item specs
+
+        # do the validation
+        # close
+        context.driver.close()
+        # switch
+        context.driver.switch_to.window(main_window)
+
+    if issues:
+        raise Exception(f'Following issues discovered: {issues}')
+
+
+
+
 
 @step('all items are "{our_search2}" related on "{page_quantity1}" amount of pages')
 def step_impl(context, our_search2, page_quantity1):
@@ -504,6 +534,23 @@ def step_impl(context, category, subcategories):
 
     assert len(issues) == 0, f'Issues found:\n' + '\n'.join(issues)
 
+
+@step("verify that slides are switching")
+def carousel_slides_default(context):
+    carousel_slides = WebDriverWait(context.driver, 20).until(
+        EC.visibility_of_all_elements_located((By.XPATH, "//div[contains(@class, 'carousel__autoplay')]//ul/li"))
+    )
+    print(f'There are {len(carousel_slides)} slides in carousel')
+
+    wait_for_element = WebDriverWait(context.driver, 4 * len(carousel_slides))
+
+    for slide in carousel_slides:
+
+        wait_for_element.until(EC.visibility_of(slide), message=f'Slide {carousel_slides.index(slide)} was not visible')
+
+        wait_for_element.until(EC.invisibility_of_element(slide), message=f'Slide {carousel_slides.index(slide)} remained visible')
+
+        print(f'Slide {carousel_slides.index(slide)} is fine')
 
 @step("verify that slider is active")
 def step_impl(context):

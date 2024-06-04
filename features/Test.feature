@@ -129,6 +129,7 @@ Feature: Ebay Regression
       | Other categories | Books, Movies & Music; Toys & Hobbies; Health & Beauty; Baby Essentials |
 
   Scenario: Validate slide banner
+    And verify that slides are switching
     And verify that slider is active
     And I click on Pause button
     And verify that slider is paused
@@ -136,3 +137,10 @@ Feature: Ebay Regression
     And verify that slide is changed to the next one
     And I click on Go to previous banner button.
     And verify that slide is changed to the previous one
+
+
+  Scenario: Filter validation - length
+    And In search bar type "dress"
+    And Click the "Search" button
+    Then Style filter "Dress Length" by "Short"
+    Then validate tha all dresses "Dress Length" are "Short"
