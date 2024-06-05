@@ -377,7 +377,7 @@ def validate_detailed_filtering(context, key_name, expected_value):
         title = item.find_element(By.XPATH, ".//span[@role='heading']").text
         product_url = item.find_element(By.XPATH,".//a[@class='s-item__link']").get_attribute('href')
         # get to the item page
-        context.driver.execute_script(f"window.open('{product_url}');") #???
+        context.driver.execute_script(f"window.open('{product_url}');")
         context.driver.switch_to.window(context.driver.window_handles[-1]) # switch to the latest tab/window
         # collect item specs
         all_labels = WebDriverWait(context.driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, "//dt[@class='ux-labels-values__labels']//span[text()]")))
@@ -394,8 +394,8 @@ def validate_detailed_filtering(context, key_name, expected_value):
         item_specs = dict(zip(all_labels_text, all_values_text))
         if key_name not in item_specs.keys():
             issues.append(f'{title} does not have anything related to {key_name}')
-        elif item_specs [key_name] != expected_value: #????
-            issues.append(f'{title} is not related {expected_value} by {key_name} \n')
+        elif item_specs [key_name] != expected_value:
+            issues.append(f'{title} is not related {expected_value} by {key_name}')
 
         # close
         context.driver.close()
@@ -403,7 +403,7 @@ def validate_detailed_filtering(context, key_name, expected_value):
         context.driver.switch_to.window(main_window)
 
     if issues:
-        raise Exception(f'Following issues discovered: {issues}')
+        raise Exception('Following issues discovered:\n' + ''.join(issues))
 
 
 

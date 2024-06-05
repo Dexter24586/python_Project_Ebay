@@ -139,8 +139,15 @@ Feature: Ebay Regression
     And verify that slide is changed to the previous one
 
 
-  Scenario: Filter validation - length
+  Scenario Outline: Filter validation - length
     And In search bar type "dress"
     And Click the "Search" button
-    Then Style filter "Dress Length" by "Short"
-    Then validate tha all dresses "Dress Length" are "Short"
+    Then Style filter "<filter_name>" by "<value_name>"
+    Then validate tha all dresses "<filter_name>" are "<value_name>"
+
+    Examples:
+    | filter_name | value_name |
+    | Dress Length| Short      |
+    | Dress Length| Midi      |
+    | Dress Length| Long      |
+
