@@ -142,12 +142,12 @@ Feature: Ebay Regression
   Scenario Outline: Filter validation - length
     And In search bar type "dress"
     And Click the "Search" button
-    Then Style filter "<filter_name>" by "<value_name>"
-    Then validate tha all dresses "<filter_name>" are "<value_name>"
+    Then Style filter "<filter_name>" by "<value_name>" and filter "<size_name>" for "<size_type>" and "<value>"
+    Then validate tha all dresses "<filter_name>" are "<value_name>" and filter "<size_name>" for "<size_type>" and "<value>"
 
     Examples:
-    | filter_name | value_name |
-    | Dress Length| Short      |
-    | Dress Length| Midi      |
-    | Dress Length| Long      |
-
+    | filter_name  | value_name | size_name | size_type   | value |
+    | Dress Length | Short | Regular | Regular Size | XS |
+#    | Dress Length | Midi | Junior | Junior Size | XS |
+#    | Dress Length | Long | Plus | Plus Size | 2XL |
+#

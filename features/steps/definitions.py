@@ -266,23 +266,7 @@ def step_impl(context):
         message="Can't find add to cart button")
     add_to_cart_button.click()
 
-@step('Style filter "{filter_name}" by "{value}"')
-def filter_by_value(context, filter_name, value):
-    expand_button = context.driver.find_element(By.XPATH, f"//div[text()='{filter_name}']")
-    if filter_name.lower() in ["style", "pattern", "season", "theme"]:
-       expand_button.click()
-       filter_option = WebDriverWait(context.driver, 10).until(
-           EC.presence_of_element_located((By.XPATH,
-                                           f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value}']]//input")),
-           message="Can't find filter option")
-       filter_option.click()
-       sleep(3)
-    else:
-        filter_option = WebDriverWait(context.driver, 10).until(
-            EC.visibility_of_element_located((By.XPATH,
-                                            f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value}']]")),
-            message="Can't find filter option")
-        filter_option.click()
+
 
 # @step('filter "{filter_name}" by "{value}"')
 # def filter_by_value(context, filter_name, value):
@@ -364,46 +348,67 @@ def check_all_items_titles(context, desired_title):
     if issues:
         raise Exception(f'Following issues discovered: {issues}')
 
-@step('validate tha all dresses "{key_name}" are "{expected_value}"')
-def validate_detailed_filtering(context, key_name, expected_value):
-    all_items = WebDriverWait(context.driver, 10).until(
-        EC.presence_of_all_elements_located((By.XPATH,
-                                        "//li[contains(@id, 'item')]")),
-        message="Can't find all items titles")
-    main_window = context.driver.current_window_handle
-    issues = []
-
-    for item in all_items:
-        title = item.find_element(By.XPATH, ".//span[@role='heading']").text
-        product_url = item.find_element(By.XPATH,".//a[@class='s-item__link']").get_attribute('href')
-        # get to the item page
-        context.driver.execute_script(f"window.open('{product_url}');")
-        context.driver.switch_to.window(context.driver.window_handles[-1]) # switch to the latest tab/window
-        # collect item specs
-        all_labels = WebDriverWait(context.driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, "//dt[@class='ux-labels-values__labels']//span[text()]")))
-        all_values = WebDriverWait(context.driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, "//dd[@class='ux-labels-values__values']//span[text()]")))
-        # get text from items
-        all_labels_text = []
-        for label in all_labels:
-            all_labels_text.append(label.text)
-
-        all_values_text = []
-        for value in all_values:
-            all_values_text.append(value.text)
-
-        item_specs = dict(zip(all_labels_text, all_values_text))
-        if key_name not in item_specs.keys():
-            issues.append(f'{title} does not have anything related to {key_name}')
-        elif item_specs [key_name] != expected_value:
-            issues.append(f'{title} is not related {expected_value} by {key_name}')
-
-        # close
-        context.driver.close()
-        # switch
-        context.driver.switch_to.window(main_window)
-
-    if issues:
-        raise Exception('Following issues discovered:\n' + ''.join(issues))
+@step('validate tha all dresses "<filter_name>" are "<value_name>" and filter "<size_name>" for "<size_type>" and "<value>"')
+# def validate_detailed_filtering(context, filter_name, value_name, size_name, size_type, value):
+#     all_items = WebDriverWait(context.driver, 10).until(
+#         EC.presence_of_all_elements_located((By.XPATH, "//li[contains(@id, 'item')]")),
+#         message="Can't find all items titles"
+#     )
+#     main_window = context.driver.current_window_handle
+#     issues = []
+#
+#     for item in all_items:
+#         title = item.find_element(By.XPATH, ".//span[@role='heading']").text
+#         product_url = item.find_element(By.XPATH, ".//a[@class='s-item__link']").get_attribute('href')
+#         context.driver.execute_script(f"window.open('{product_url}');")
+#         context.driver.switch_to.window(context.driver.window_handles[-1])  # switch to the latest tab/window
+#
+#         try:
+#             all_labels = WebDriverWait(context.driver, 10).until(
+#                 EC.presence_of_all_elements_located((By.XPATH, "//dt[@class='ux-labels-values__labels']//span[text()]"))
+#             )
+#             all_values = WebDriverWait(context.driver, 10).until(
+#                 EC.presence_of_all_elements_located((By.XPATH, "//dd[@class='ux-labels-values__values']//span[text()]"))
+#             )
+#             all_labels_text = [label.text for label in all_labels]
+#             all_values_text = [value.text for value in all_values]
+#             item_specs = dict(zip(all_labels_text, all_values_text))
+#
+#             if filter_name not in item_specs:
+#                 issues.append(f'{title} does not have anything related to {filter_name}')
+#             elif item_specs[filter_name] != value_name:
+#                 issues.append(f'{title} is not related {value_name} by {filter_name}')
+#
+#         except Exception as e:
+#             issues.append(f"Error processing {title}: {str(e)}")
+#
+#     if size_name.lower() == "Regular".lower():
+#         # filter_option = context.driver.find_element(By.XPATH, f"'//li[@class='x-refine__main__list '][.//div[text()='Size']]//div[@class='size-component__container']//span[text()='{size_type}']/following-sibling::span[text()='{value}]")
+#         filter_option = WebDriverWait(context.driver, 10).until(
+#             EC.presence_of_element_located((By.XPATH,
+#                                             f"'//li[@class='x-refine__main__list '][.//div[text()='Size']]//div[@class='size-component__container']//span[text()='{size_type}']/following-sibling::span[text()='{value}]")),
+#             message="Can't find filter option")
+#         filter_option.click()
+#         sleep(3)
+#     else:
+#         # button = context.driver.find_element(By.XPATH, f"//h4[contains(text(),'{size_name}')]")
+#         button = WebDriverWait(context.driver, 10).until(
+#             EC.presence_of_element_located((By.XPATH,
+#                                             f"//h4[contains(text(),'{size_name}')]")),
+#             message="Can't find size option")
+#         button.click()
+#         # filter_option = context.driver.find_element(By.XPATH, f"//li[@class='x-refine__main__list '][.//div[text()='Size']]//div[@class='size-component__container']//span[text()='{size_type}']/following-sibling::span[text()='{value}']" )
+#         filter_option = WebDriverWait(context.driver, 10).until(
+#             EC.presence_of_element_located((By.XPATH,
+#                                             f"//li[@class='x-refine__main__list '][.//div[text()='Size']]//div[@class='size-component__container']//span[text()='{size_type}']/following-sibling::span[text()='{value}']")),
+#             message="Can't find size filter option option")
+#         filter_option.click()
+#
+#         context.driver.close()
+#         context.driver.switch_to.window(main_window)
+#
+#     if issues:
+#         raise Exception('Following issues discovered:\n' + '\n'.join(issues))
 
 
 
@@ -643,3 +648,86 @@ def step_impl(context, next_previous_button):
         raise AssertionError(f"{next_previous_button} button is not active")
 
 
+@step('validate tha all dresses "{filter_name}" are "{value_name}" and filter "{size_name}" for "{size_type}" and "{value}"')
+def validate_detailed_filtering(context, filter_name, value_name, size_name, size_type, value):
+    all_items = WebDriverWait(context.driver, 10).until(
+        EC.presence_of_all_elements_located((By.XPATH, "//li[contains(@id, 'item')]")),
+        message="Can't find all items titles"
+    )
+    main_window = context.driver.current_window_handle
+    issues = []
+
+    for item in all_items:
+        title = item.find_element(By.XPATH, ".//span[@role='heading']").text
+        product_url = item.find_element(By.XPATH, ".//a[@class='s-item__link']").get_attribute('href')
+        context.driver.execute_script(f"window.open('{product_url}');")
+        context.driver.switch_to.window(context.driver.window_handles[-1])  # switch to the latest tab/window
+
+        try:
+            all_labels = WebDriverWait(context.driver, 10).until(
+                EC.presence_of_all_elements_located((By.XPATH, "//dt[@class='ux-labels-values__labels']//span[text()]"))
+            )
+            all_values = WebDriverWait(context.driver, 10).until(
+                EC.presence_of_all_elements_located((By.XPATH, "//dd[@class='ux-labels-values__values']//span[text()]"))
+            )
+            all_labels_text = [label.text for label in all_labels]
+            all_values_text = [value.text for value in all_values]
+            item_specs = dict(zip(all_labels_text, all_values_text))
+
+            if filter_name not in item_specs:
+                issues.append(f'{title} does not have anything related to {filter_name}')
+            elif item_specs[filter_name] != value_name:
+                issues.append(f'{title} is not related {value_name} by {filter_name}')
+            elif size_name not in item_specs:
+                issues.append(f'{title} does not have anything related to {size_name}')
+            elif item_specs[size_name] != value:
+                issues.append(f'{title} is not related {value} by {size_name}')
+
+        except Exception as e:
+            issues.append(f"Error processing {title}: {str(e)}")
+
+        context.driver.close()
+        context.driver.switch_to.window(main_window)
+
+    if issues:
+        raise Exception('Following issues discovered:\n' + '\n'.join(issues))
+
+
+@step('Style filter "{filter_name}" by "{value_name}" and filter "{size_name}" for "{size_type}" and "{value}"')
+def filter_by_value(context, filter_name, value_name, size_name, size_type, value):
+    expand_button = context.driver.find_element(By.XPATH, f"//div[text()='{filter_name}']")
+    if filter_name.lower() in ["style", "pattern", "season", "theme"]:
+       expand_button.click()
+       filter_option = WebDriverWait(context.driver, 10).until(
+           EC.presence_of_element_located((By.XPATH,
+                                           f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value_name}']]//input")),
+           message="Can't find filter option")
+       filter_option.click()
+       sleep(3)
+    else:
+        filter_option = WebDriverWait(context.driver, 10).until(
+            EC.visibility_of_element_located((By.XPATH,
+                                            f"//li[@class='x-refine__main__list '][.//div[text()='{filter_name}']]//div[@class='x-refine__select__svg'][.//span[text()='{value_name}']]")),
+            message="Can't find filter option")
+        filter_option.click()
+    if size_name.lower() == "Regular".lower():
+        # filter_option = context.driver.find_element(By.XPATH, f"'//li[@class='x-refine__main__list '][.//div[text()='Size']]//div[@class='size-component__container']//span[text()='{size_type}']/following-sibling::span[text()='{value}]")
+        filter_option2 = WebDriverWait(context.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            f"//li[@class='x-refine__main__list '][.//div[text()='Size']]//div[@class='size-component__container']//span[text()='{size_type}']/following-sibling::span[text()='{value}']")),
+            message="Can't find filter option")
+        filter_option2.click()
+        sleep(3)
+    else:
+        # button = context.driver.find_element(By.XPATH, f"//h4[contains(text(),'{size_name}')]")
+        button = WebDriverWait(context.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            f"//h4[contains(text(),'{size_name}')]")),
+            message="Can't find size option")
+        button.click()
+        # filter_option = context.driver.find_element(By.XPATH, f"//li[@class='x-refine__main__list '][.//div[text()='Size']]//div[@class='size-component__container']//span[text()='{size_type}']/following-sibling::span[text()='{value}']" )
+        filter_option = WebDriverWait(context.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            f"//li[@class='x-refine__main__list '][.//div[text()='Size']]//div[@class='size-component__container']//span[text()='{size_type}']/following-sibling::span[text()='{value}']")),
+            message="Can't find size filter option option")
+        filter_option.click()
