@@ -148,6 +148,6 @@ Feature: Ebay Regression
     Examples:
     | filter_name  | value_name | size_name | size_type   | value |
     | Dress Length | Short | Regular | Regular Size | XS |
-#    | Dress Length | Midi | Junior | Junior Size | XS |
-#    | Dress Length | Long | Plus | Plus Size | 2XL |
+    | Dress Length | Midi | Junior | Juniors Size | XS |
+    | Dress Length | Long | Plus | Plus Size | 2XL |
 #
